@@ -55,6 +55,9 @@ namespace HotelCancun.Application.Services.Rooms
 
             var reservations = _mapper.Map<IList<ReservationDto>>(room.ClientRooms);
 
+            from = from.Date;
+            to = to.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+
             var currentReservation = new ReservationDto()
             {
                 From = from,

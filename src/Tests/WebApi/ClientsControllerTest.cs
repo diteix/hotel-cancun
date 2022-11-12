@@ -1,18 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using HotelCancun.Application.Services.Interfaces;
-using HotelCancun.WebApi.Controllers;
-using HotelCancun.Application.Dtos.Validation;
 using HotelCancun.Application.Dtos.Client;
 using HotelCancun.Application.Dtos.Reservation;
+using HotelCancun.Application.Dtos.Validation;
+using HotelCancun.Application.Services.Interfaces;
+using HotelCancun.WebApi.Controllers;
 using HotelCancun.WebApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace HotelCancun.WebApi.Tests;
@@ -37,7 +34,7 @@ public class ClientsControllerTest
 
         var result = await _controller.GetClient(It.IsAny<int>());
 
-        Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
+        Assert.Equal((int)HttpStatusCode.OK, ((OkObjectResult)result).StatusCode);
     }
 
     [Fact]
@@ -47,7 +44,7 @@ public class ClientsControllerTest
 
         var result = await _controller.GetClient(It.IsAny<int>());
 
-        Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
+        Assert.Equal((int)HttpStatusCode.NotFound, ((NotFoundObjectResult)result).StatusCode);
     }
 
     [Fact]
@@ -57,7 +54,7 @@ public class ClientsControllerTest
 
         var result = await _controller.GetReservations(It.IsAny<int>());
 
-        Assert.Equal((int)HttpStatusCode.OK, (result as OkObjectResult).StatusCode);
+        Assert.Equal((int)HttpStatusCode.OK, ((OkObjectResult)result).StatusCode);
     }
 
     [Fact]
@@ -67,7 +64,7 @@ public class ClientsControllerTest
 
         var result = await _controller.GetReservations(It.IsAny<int>());
 
-        Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
+        Assert.Equal((int)HttpStatusCode.NotFound, ((NotFoundObjectResult)result).StatusCode);
     }
 
     [Fact]
@@ -77,7 +74,7 @@ public class ClientsControllerTest
 
         var result = await _controller.CancelReservation(It.IsAny<int>(), It.IsAny<int>());
 
-        Assert.Equal((int)HttpStatusCode.NoContent, (result as NoContentResult).StatusCode);
+        Assert.Equal((int)HttpStatusCode.NoContent, ((NoContentResult)result).StatusCode);
     }
 
     [Fact]
@@ -87,7 +84,7 @@ public class ClientsControllerTest
 
         var result = await _controller.CancelReservation(It.IsAny<int>(), It.IsAny<int>());
 
-        Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
+        Assert.Equal((int)HttpStatusCode.NotFound, ((NotFoundObjectResult)result).StatusCode);
     }
 
     [Fact]
@@ -95,10 +92,11 @@ public class ClientsControllerTest
     {
         _application.Setup(s => s.ModifyReservationAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .ReturnsAsync(new ValidationDto<ReservationDto>());
+        var reservation = new Reservation();
 
-        var result = await _controller.ModifyReservation(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Reservation>());
+        var result = await _controller.ModifyReservation(It.IsAny<int>(), It.IsAny<int>(), reservation);
 
-        Assert.Equal((int)HttpStatusCode.NoContent, (result as NoContentResult).StatusCode);
+        Assert.Equal((int)HttpStatusCode.NoContent, ((NoContentResult)result).StatusCode);
     }
 
     [Fact]
@@ -106,10 +104,11 @@ public class ClientsControllerTest
     {
         _application.Setup(s => s.ModifyReservationAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .ReturnsAsync(new ValidationDto<ReservationDto>("Bad Request"){ Value = new ReservationDto() });
+        var reservation = new Reservation();
 
-        var result = await _controller.ModifyReservation(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Reservation>());
+        var result = await _controller.ModifyReservation(It.IsAny<int>(), It.IsAny<int>(), reservation);
 
-        Assert.Equal((int)HttpStatusCode.BadRequest, (result as BadRequestObjectResult).StatusCode);
+        Assert.Equal((int)HttpStatusCode.BadRequest, ((BadRequestObjectResult)result).StatusCode);
     }
 
     [Fact]
@@ -117,9 +116,10 @@ public class ClientsControllerTest
     {
         _application.Setup(s => s.ModifyReservationAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
             .ReturnsAsync(new ValidationDto<ReservationDto>("Not Found"));
+        var reservation = new Reservation();
 
-        var result = await _controller.ModifyReservation(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Reservation>());
+        var result = await _controller.ModifyReservation(It.IsAny<int>(), It.IsAny<int>(), reservation);
 
-        Assert.Equal((int)HttpStatusCode.NotFound, (result as NotFoundObjectResult).StatusCode);
+        Assert.Equal((int)HttpStatusCode.NotFound, ((NotFoundObjectResult)result).StatusCode);
     }
 }

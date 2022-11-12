@@ -100,7 +100,15 @@ namespace HotelCancun.Application.Services.Clients
 
             var reservations = _mapper.Map<IList<ReservationDto>>(client.ClientRooms);
 
-            var currentReservation = _mapper.Map<ReservationDto>(clientRoom);
+            from = from.Date;
+            to = to.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+
+            var currentReservation = new ReservationDto()
+            {
+                Id = reservationId,
+                From = from,
+                To = to
+            };
 
             var validation = ValidateReservationService.Validate(reservations, currentReservation);
 

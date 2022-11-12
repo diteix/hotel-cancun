@@ -10,8 +10,13 @@ namespace HotelCancun.Application.Services
     {
         public static ValidationDto<ReservationDto> Validate(IList<ReservationDto> reservations, ReservationDto currentReservation)
         {
+            if (currentReservation.From > currentReservation.To)
+            {
+                return CreateResponseObject("Start date of reservation can't later than the end date.", currentReservation);
+            }
+
             // the stay can’t be longer than 3 days
-            if ((currentReservation.To - currentReservation.From).Days > 3)
+            if ((currentReservation.To - currentReservation.From).TotalDays > 3)
             {
                 return CreateResponseObject("Reservation can't be longer than 3 days.", currentReservation);
             }
@@ -29,7 +34,7 @@ namespace HotelCancun.Application.Services
             }
 
             // Check if room is not reserved
-            foreach (var reservation in reservations)
+            foreach (var reservation in reservations.Where(s => s.Id != currentReservation.Id))
             {
                 if (IsBewteenTwoDates(currentReservation.From, reservation.From, reservation.To) 
                     || IsBewteenTwoDates(currentReservation.To, reservation.From, reservation.To))
